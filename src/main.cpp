@@ -25,7 +25,8 @@ HittableList get_scene() {
         std::make_shared<SolidColor>(0.6, 0.2, 0.3));
     world.add(std::make_shared<Sphere>(Vec3(0, 1, 0), 1.0, material2));
 
-    auto material3 = std::make_shared<Metal>(Vec3(0.7, 0.6, 0.5), 0.0);
+    auto material3 = std::make_shared<Metal>(
+        std::make_shared<SolidColor>(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<Sphere>(Vec3(2.5, 1, 0), 1.0, material3));
 
     return world;

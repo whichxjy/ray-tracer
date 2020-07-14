@@ -31,18 +31,19 @@ private:
 
 class Metal : public Material {
 public:
-    Metal(const Vec3& albedo, double fuzz)
+    Metal(std::shared_ptr<Texture> albedo, double fuzz)
         : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {}
 
     virtual bool scatter(const Ray& ray_in, const HitRecord& record,
                          Vec3& attenuation, Ray& scattered) const {
         Vec3 reflected = reflect(unit_vector(ray_in.direction), record.normal);
         scattered = Ray(record.p, reflected + fuzz * random_in_unit_sphere());
-        attenuation = albedo;
+        attenuation = albedo->value(record.u, record.v, record.p);
         return (dot(scattered.direction, record.normal) > 0);
     }
 
-    Vec3 albedo;
+private:
+    std::shared_ptr<Texture> albedo;
     double fuzz;
 };
 
@@ -90,6 +91,7 @@ public:
         return true;
     }
 
+private:
     double ref_idx;
 };
 
