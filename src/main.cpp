@@ -13,6 +13,10 @@
 HittableList get_scene() {
     HittableList world;
 
+    auto diffuse_light = std::make_shared<DiffuseLight>(
+        std::make_shared<SolidColor>(10, 10, 10));
+    world.add(std::make_shared<Sphere>(Vec3(0, 4, 0), 1, diffuse_light));
+
     auto checker = std::make_shared<CheckerTexture>(
         std::make_shared<SolidColor>(0.2, 0.3, 0.1),
         std::make_shared<SolidColor>(0.9, 0.9, 0.9));
@@ -34,27 +38,28 @@ HittableList get_scene() {
     return world;
 }
 
-Vec3 ray_color(const Ray& ray, const Hittable& world, int depth) {
+Vec3 ray_color(const Ray& ray, const Vec3& background_color,
+               const Hittable& world, int depth) {
     if (depth <= 0) {
         return Vec3(0, 0, 0);
     }
 
     HitRecord record;
 
-    if (world.hit(ray, 0.001, infinity, record)) {
-        Ray scattered;
-        Vec3 attenuation;
-
-        if (record.material->scatter(ray, record, attenuation, scattered)) {
-            return attenuation * ray_color(scattered, world, depth - 1);
-        }
-
-        return Vec3(0, 0, 0);
+    if (!world.hit(ray, 0.001, infinity, record)) {
+        return background_color;
     }
 
-    Vec3 unit_direction = unit_vector(ray.direction);
-    double t = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0);
+    Ray scattered;
+    Vec3 attenuation;
+    Vec3 emitted = record.material->emitted(record.u, record.v, record.p);
+
+    if (!record.material->scatter(ray, record, attenuation, scattered)) {
+        return emitted;
+    }
+
+    return emitted + attenuation * ray_color(scattered, background_color, world,
+                                             depth - 1);
 }
 
 int main() {
@@ -79,6 +84,7 @@ int main() {
               << "255" << std::endl;
 
     HittableList world = get_scene();
+    Vec3 background_color(0.2, 0.2, 0.2);
 
     for (int j = image_height - 1; j >= 0; --j) {
         for (int i = 0; i < image_width; ++i) {
@@ -88,7 +94,8 @@ int main() {
                 double u = (i + random_double()) / (image_width - 1);
                 double v = (j + random_double()) / (image_height - 1);
                 Ray ray = camera.get_ray(u, v);
-                pixel_color += ray_color(ray, world, max_depth);
+                pixel_color +=
+                    ray_color(ray, background_color, world, max_depth);
             }
 
             write_color(std::cout, pixel_color, samples_per_pixel);
