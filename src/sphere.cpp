@@ -15,13 +15,7 @@ bool Sphere::hit(const Ray& ray, double t_min, double t_max,
         if (temp < t_max && temp > t_min) {
             record.t = temp;
             record.p = ray.at(record.t);
-
-            double u;
-            double v;
-            get_sphere_uv(record.p, u, v);
-            record.u = u;
-            record.v = v;
-
+            get_sphere_uv((record.p - center) / radius, record.u, record.v);
             Vec3 outward_normal = (record.p - center) / radius;
             record.set_face_normal(ray, outward_normal);
             record.material = material;
@@ -33,13 +27,7 @@ bool Sphere::hit(const Ray& ray, double t_min, double t_max,
         if (temp < t_max && temp > t_min) {
             record.t = temp;
             record.p = ray.at(record.t);
-
-            double u;
-            double v;
-            get_sphere_uv(record.p, u, v);
-            record.u = u;
-            record.v = v;
-
+            get_sphere_uv((record.p - center) / radius, record.u, record.v);
             Vec3 outward_normal = (record.p - center) / radius;
             record.set_face_normal(ray, outward_normal);
             record.material = material;
@@ -51,8 +39,8 @@ bool Sphere::hit(const Ray& ray, double t_min, double t_max,
 }
 
 void get_sphere_uv(const Vec3& p, double& u, double& v) {
-    auto phi = atan2(p.z(), p.x());
-    auto theta = asin(p.y());
+    double phi = atan2(p.z(), p.x());
+    double theta = asin(p.y());
     u = 1 - (phi + pi) / (2 * pi);
     v = (theta + pi / 2) / pi;
 }
