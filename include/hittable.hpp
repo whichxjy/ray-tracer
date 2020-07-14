@@ -11,8 +11,10 @@ class Material;
 class HitRecord {
 public:
     Vec3 p;
-    double t;
     Vec3 normal;
+    double t;
+    double u;
+    double v;
     bool front_face;
     std::shared_ptr<Material> material;
 

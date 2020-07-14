@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "camera.hpp"
 #include "color.hpp"
@@ -6,19 +7,22 @@
 #include "material.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
+#include "texture.hpp"
 #include "util.hpp"
 
 HittableList get_scene() {
     HittableList world;
 
-    auto ground_material = std::make_shared<Lambertian>(Vec3(0.3, 0.4, 0.5));
+    auto ground_material = std::make_shared<Lambertian>(
+        std::make_shared<SolidColor>(0.3, 0.4, 0.5));
     world.add(
         std::make_shared<Sphere>(Vec3(0, -1000, 0), 1000, ground_material));
 
     auto material1 = std::make_shared<Dielectric>(1.5);
     world.add(std::make_shared<Sphere>(Vec3(-2.5, 1, 0), 1.0, material1));
 
-    auto material2 = std::make_shared<Lambertian>(Vec3(0.6, 0.2, 0.3));
+    auto material2 = std::make_shared<Lambertian>(
+        std::make_shared<SolidColor>(0.6, 0.2, 0.3));
     world.add(std::make_shared<Sphere>(Vec3(0, 1, 0), 1.0, material2));
 
     auto material3 = std::make_shared<Metal>(Vec3(0.7, 0.6, 0.5), 0.0);

@@ -1,8 +1,11 @@
 #ifndef _MATERIAL_HPP_
 #define _MATERIAL_HPP_
 
+#include <memory>
+
 #include "hittable.hpp"
 #include "ray.hpp"
+#include "texture.hpp"
 
 class Material {
 public:
@@ -12,17 +15,18 @@ public:
 
 class Lambertian : public Material {
 public:
-    Lambertian(const Vec3& albedo) : albedo(albedo) {}
+    Lambertian(std::shared_ptr<Texture> albedo) : albedo(albedo) {}
 
     virtual bool scatter(const Ray& ray_in, const HitRecord& record,
                          Vec3& attenuation, Ray& scattered) const {
         Vec3 scatter_direction = record.normal + random_unit_vector();
         scattered = Ray(record.p, scatter_direction);
-        attenuation = albedo;
+        attenuation = albedo->value(record.u, record.v, record.p);
         return true;
     }
 
-    Vec3 albedo;
+private:
+    std::shared_ptr<Texture> albedo;
 };
 
 class Metal : public Material {
