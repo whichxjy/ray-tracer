@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 
+#define STB_IMAGE_IMPLEMENTATION
 #include "camera.hpp"
 #include "color.hpp"
 #include "hittable.hpp"

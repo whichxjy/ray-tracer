@@ -2,11 +2,12 @@ CC = g++ -std=c++17
 INC = include
 SRC = src
 BUILD = build
-INCLUDE = -I ./$(INC)
+INCLUDE = -I ./$(INC) -lassimp
 
 TARGET = ray
 
-OBJECTS = $(BUILD)/main.o $(BUILD)/color.o $(BUILD)/hittable.o $(BUILD)/sphere.o
+OBJECTS = $(BUILD)/main.o $(BUILD)/color.o $(BUILD)/hittable.o $(BUILD)/sphere.o \
+			$(BUILD)/material.o
 
 $(TARGET): $(OBJECTS)
 	@$(CC) -o $@ $^ $(INCLUDE)

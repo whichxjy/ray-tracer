@@ -14,9 +14,9 @@ public:
         double viewport_height = 2.0 * h;
         double viewport_width = aspect_ratio * viewport_height;
 
-        auto w = unit_vector(lookfrom - lookat);
-        auto u = unit_vector(cross(vup, w));
-        auto v = cross(w, u);
+        Vec3 w = unit_vector(lookfrom - lookat);
+        Vec3 u = unit_vector(cross(vup, w));
+        Vec3 v = cross(w, u);
 
         origin = lookfrom;
         horizontal = viewport_width * u;

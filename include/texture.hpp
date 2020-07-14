@@ -1,7 +1,6 @@
 #ifndef _TEXTURE_HPP_
 #define _TEXTURE_HPP_
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "image.hpp"
 #include "vec3.hpp"
 
@@ -49,7 +48,7 @@ public:
     ImageTexture(const std::string& path) {
         data = stbi_load(path.c_str(), &width, &height, &channel, 0);
         if (data == nullptr) {
-            std::cerr << "Failed to load the image->" << path.c_str()
+            std::cerr << "Failed to load the image " << path.c_str()
                       << std::endl;
         }
     }
