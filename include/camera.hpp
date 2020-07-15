@@ -3,7 +3,7 @@
 
 #include "ray.hpp"
 #include "util.hpp"
-#include "vec3.hpp"
+#include "vec/vec3.hpp"
 
 class Camera {
 public:

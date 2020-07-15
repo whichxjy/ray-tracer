@@ -2,7 +2,7 @@
 #define _TEXTURE_HPP_
 
 #include "image.hpp"
-#include "vec3.hpp"
+#include "vec/vec3.hpp"
 
 class Texture {
 public:

@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "vec3.hpp"
+#include "vec/vec3.hpp"
 
 void write_color(std::ostream& out, Vec3 pixel_color, int samples_per_pixel);
 
