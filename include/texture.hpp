@@ -6,7 +6,7 @@
 
 class Texture {
 public:
-    virtual Vec3 value(double u, double v, const Vec3& p) const = 0;
+    virtual Vec3 value(double u, double v, const Vec3& position) const = 0;
 };
 
 class SolidColor : public Texture {
@@ -15,7 +15,7 @@ public:
 
     SolidColor(double r, double g, double b) : SolidColor(Vec3(r, g, b)) {}
 
-    virtual Vec3 value(double u, double v, const Vec3& p) const {
+    virtual Vec3 value(double u, double v, const Vec3& position) const {
         return color;
     }
 
@@ -28,14 +28,15 @@ public:
     CheckerTexture(std::shared_ptr<Texture> lhs, std::shared_ptr<Texture> rhs)
         : even(lhs), odd(rhs) {}
 
-    virtual Vec3 value(double u, double v, const Vec3& p) const {
-        auto sines = sin(10 * p.x()) * sin(10 * p.y()) * sin(10 * p.z());
+    virtual Vec3 value(double u, double v, const Vec3& position) const {
+        auto sines = sin(10 * position.x()) * sin(10 * position.y()) *
+                     sin(10 * position.z());
 
         if (sines < 0) {
-            return odd->value(u, v, p);
+            return odd->value(u, v, position);
         }
 
-        return even->value(u, v, p);
+        return even->value(u, v, position);
     }
 
 private:
@@ -54,7 +55,7 @@ public:
     }
     virtual ~ImageTexture() { free(data); }
 
-    virtual Vec3 value(double u, double v, const Vec3& p) const {
+    virtual Vec3 value(double u, double v, const Vec3& position) const {
         if (data == nullptr) {
             return Vec3(0, 1, 1);
         }

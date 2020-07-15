@@ -10,7 +10,7 @@ class Material;
 
 class HitRecord {
 public:
-    Vec3 p;
+    Vec3 position;
     Vec3 normal;
     double t;
     double u;

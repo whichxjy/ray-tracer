@@ -12,7 +12,7 @@ public:
     virtual bool scatter(const Ray& ray_in, const HitRecord& record,
                          Vec3& attenuation, Ray& scattered) const = 0;
 
-    virtual Vec3 emitted(double u, double v, const Vec3& p) const {
+    virtual Vec3 emitted(double u, double v, const Vec3& position) const {
         return Vec3(0, 0, 0);
     }
 };
@@ -63,8 +63,8 @@ public:
         return false;
     }
 
-    virtual Vec3 emitted(double u, double v, const Vec3& p) const {
-        return emit->value(u, v, p);
+    virtual Vec3 emitted(double u, double v, const Vec3& position) const {
+        return emit->value(u, v, position);
     }
 
 public:

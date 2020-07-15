@@ -19,6 +19,6 @@ public:
     std::shared_ptr<Material> material;
 };
 
-void get_sphere_uv(const Vec3& p, double& u, double& v);
+void get_sphere_uv(const Vec3& position, double& u, double& v);
 
 #endif

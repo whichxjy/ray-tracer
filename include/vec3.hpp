@@ -166,23 +166,23 @@ inline Vec3 random_unit_vector() {
 }
 
 inline Vec3 random_in_unit_sphere() {
-    Vec3 p;
+    Vec3 position;
 
     do {
-        p = Vec3::random(-1, 1);
-    } while (p.squared_length() >= 1);
+        position = Vec3::random(-1, 1);
+    } while (position.squared_length() >= 1);
 
-    return p;
+    return position;
 }
 
 inline Vec3 random_in_unit_disk() {
-    Vec3 p;
+    Vec3 position;
 
     do {
-        p = Vec3(random_double(-1, 1), random_double(-1, 1), 0);
-    } while (p.squared_length() >= 1);
+        position = Vec3(random_double(-1, 1), random_double(-1, 1), 0);
+    } while (position.squared_length() >= 1);
 
-    return p;
+    return position;
 }
 
 inline Vec3 random_in_hemisphere(const Vec3& normal) {
