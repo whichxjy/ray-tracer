@@ -6,7 +6,7 @@
 
 class Texture {
 public:
-    virtual Vec3 value(double u, double v, const Vec3& position) const = 0;
+    virtual Vec3 value(const Vec3& position, const Vec2& texcoord) const = 0;
 };
 
 class SolidColor : public Texture {
@@ -15,7 +15,7 @@ public:
 
     SolidColor(double r, double g, double b) : SolidColor(Vec3(r, g, b)) {}
 
-    virtual Vec3 value(double u, double v, const Vec3& position) const {
+    virtual Vec3 value(const Vec3& position, const Vec2& texcoord) const {
         return color;
     }
 
@@ -28,15 +28,18 @@ public:
     CheckerTexture(std::shared_ptr<Texture> lhs, std::shared_ptr<Texture> rhs)
         : even(lhs), odd(rhs) {}
 
-    virtual Vec3 value(double u, double v, const Vec3& position) const {
+    virtual Vec3 value(const Vec3& position, const Vec2& texcoord) const {
+        double u = texcoord.x();
+        double v = texcoord.y();
+
         auto sines = sin(10 * position.x()) * sin(10 * position.y()) *
                      sin(10 * position.z());
 
         if (sines < 0) {
-            return odd->value(u, v, position);
+            return odd->value(position, texcoord);
         }
 
-        return even->value(u, v, position);
+        return even->value(position, texcoord);
     }
 
 private:
@@ -55,13 +58,13 @@ public:
     }
     virtual ~ImageTexture() { free(data); }
 
-    virtual Vec3 value(double u, double v, const Vec3& position) const {
+    virtual Vec3 value(const Vec3& position, const Vec2& texcoord) const {
         if (data == nullptr) {
             return Vec3(0, 1, 1);
         }
 
-        u = clamp(u, 0.0, 1.0);
-        v = 1.0 - clamp(v, 0.0, 1.0);
+        double u = clamp(texcoord.x(), 0.0, 1.0);
+        double v = 1.0 - clamp(texcoord.y(), 0.0, 1.0);
 
         int i = static_cast<int>(u * width);
         int j = static_cast<int>(v * height);

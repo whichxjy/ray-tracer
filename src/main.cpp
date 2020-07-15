@@ -53,8 +53,7 @@ Vec3 ray_color(const Ray& ray, const Vec3& background_color,
 
     Ray scattered;
     Vec3 attenuation;
-    Vec3 emitted =
-        record.material->emitted(record.u, record.v, record.position);
+    Vec3 emitted = record.material->emitted(record.position, record.texcoord);
 
     if (!record.material->scatter(ray, record, attenuation, scattered)) {
         return emitted;

@@ -2,6 +2,7 @@
 #define _SPHERE_HPP_
 
 #include "hittable.hpp"
+#include "vec/vec2.hpp"
 #include "vec/vec3.hpp"
 
 class Sphere : public Hittable {
@@ -19,6 +20,6 @@ public:
     std::shared_ptr<Material> material;
 };
 
-void get_sphere_uv(const Vec3& position, double& u, double& v);
+void get_sphere_texcoord(const Vec3& position, Vec2& texcoord);
 
 #endif

@@ -4,7 +4,7 @@ bool Lambertian::scatter(const Ray& ray_in, const HitRecord& record,
                          Vec3& attenuation, Ray& scattered) const {
     Vec3 scatter_direction = record.normal + random_unit_vector();
     scattered = Ray(record.position, scatter_direction);
-    attenuation = albedo->value(record.u, record.v, record.position);
+    attenuation = albedo->value(record.position, record.texcoord);
     return true;
 }
 
@@ -13,7 +13,7 @@ bool Metal::scatter(const Ray& ray_in, const HitRecord& record,
     Vec3 reflected = reflect(unit_vector(ray_in.direction), record.normal);
     scattered =
         Ray(record.position, reflected + fuzz * random_in_unit_sphere());
-    attenuation = albedo->value(record.u, record.v, record.position);
+    attenuation = albedo->value(record.position, record.texcoord);
     return (dot(scattered.direction, record.normal) > 0);
 }
 

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "ray.hpp"
+#include "vec/vec2.hpp"
 
 class Material;
 
@@ -12,9 +13,8 @@ class HitRecord {
 public:
     Vec3 position;
     Vec3 normal;
+    Vec2 texcoord;
     double t;
-    double u;
-    double v;
     bool front_face;
     std::shared_ptr<Material> material;
 
