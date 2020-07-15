@@ -43,7 +43,6 @@ bool Sphere::hit(const Ray& ray, double t_min, double t_max,
 void get_sphere_texcoord(const Vec3& position, Vec2& texcoord) {
     double phi = atan2(position.z(), position.x());
     double theta = asin(position.y());
-    double x = 1 - (phi + pi) / (2 * pi);
-    double y = (theta + pi / 2) / pi;
-    texcoord = Vec2(x, y);
+    texcoord[0] = 1 - (phi + pi) / (2 * pi);
+    texcoord[1] = (theta + pi / 2) / pi;
 }

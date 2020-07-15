@@ -18,6 +18,9 @@ public:
     inline double x() const { return e[0]; }
     inline double y() const { return e[1]; }
 
+    inline double operator[](int i) const { return e[i]; }
+    inline double& operator[](int i) { return e[i]; }
+
 private:
     double e[2];
 };
