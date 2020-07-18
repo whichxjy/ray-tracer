@@ -1,5 +1,7 @@
 #include "hittable.hpp"
 
+#include "bvh.hpp"
+
 void HitRecord::set_face_normal(const Ray& ray, const Vec3& outward_normal) {
     front_face = dot(ray.direction, outward_normal) < 0;
     normal = front_face ? outward_normal : -outward_normal;
@@ -7,6 +9,10 @@ void HitRecord::set_face_normal(const Ray& ray, const Vec3& outward_normal) {
 
 bool HittableList::hit(const Ray& ray, double t_min, double t_max,
                        HitRecord& record) const {
+    if (bvh_tree_root) {
+        return bvh_tree_root->hit(ray, t_min, t_max, record);
+    }
+
     HitRecord temp_record;
     bool hit_anything = false;
     double closest_so_far = t_max;
@@ -43,4 +49,8 @@ bool HittableList::bounding_box(double t_min, double t_max,
     }
 
     return true;
+}
+
+void HittableList::build() {
+    bvh_tree_root = std::make_shared<BVHNode>(objects, 0.001, infinity);
 }

@@ -9,6 +9,7 @@
 #include "vec/vec2.hpp"
 
 class Material;
+class BVHNode;
 
 class HitRecord {
 public:
@@ -45,8 +46,11 @@ public:
     virtual bool bounding_box(double t_min, double t_max,
                               Box& output_box) const;
 
+    void build();
+
 public:
     std::vector<std::shared_ptr<Hittable>> objects;
+    std::shared_ptr<BVHNode> bvh_tree_root;
 };
 
 #endif
