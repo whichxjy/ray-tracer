@@ -99,7 +99,7 @@ int main() {
     Camera camera(lookfrom, lookat, vup, 20, aspect_ratio, aperture,
                   dist_to_focus);
 
-    int image_width = 300;
+    int image_width = 250;
     int image_height = static_cast<int>(image_width / aspect_ratio);
     int samples_per_pixel = 100;
     int max_depth = 50;

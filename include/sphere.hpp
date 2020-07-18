@@ -11,7 +11,7 @@ public:
     Sphere(Vec3 center, double radius, std::shared_ptr<Material> material)
         : center(center), radius(radius), material(material){};
 
-    virtual bool hit(const Ray& ray, double tmin, double tmax,
+    virtual bool hit(const Ray& ray, double t_min, double t_max,
                      HitRecord& record) const;
 
 public:

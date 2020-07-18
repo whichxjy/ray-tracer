@@ -7,7 +7,7 @@ INCLUDE = -I ./$(INC)
 TARGET = ray
 
 OBJECTS = $(BUILD)/main.o $(BUILD)/color.o $(BUILD)/hittable.o $(BUILD)/sphere.o \
-			$(BUILD)/material.o $(BUILD)/mesh.o
+			$(BUILD)/material.o $(BUILD)/mesh.o $(BUILD)/box.o
 
 $(TARGET): $(OBJECTS)
 	@$(CC) -o $@ $^ $(INCLUDE) -lassimp
