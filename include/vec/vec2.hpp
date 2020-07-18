@@ -21,8 +21,15 @@ public:
     inline double operator[](int i) const { return e[i]; }
     inline double& operator[](int i) { return e[i]; }
 
-private:
     double e[2];
 };
+
+inline Vec2 operator+(const Vec2& v1, const Vec2& v2) {
+    return Vec2(v1.e[0] + v2.e[0], v1.e[1] + v2.e[1]);
+}
+
+inline Vec2 operator*(const Vec2& v, double t) {
+    return Vec2(t * v.e[0], t * v.e[1]);
+}
 
 #endif

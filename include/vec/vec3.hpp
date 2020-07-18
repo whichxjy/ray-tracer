@@ -149,14 +149,22 @@ inline Vec3& Vec3::operator*=(const double t) {
 
 inline Vec3& Vec3::operator/=(const double t) {
     double k = 1.0f / t;
-
     e[0] *= k;
     e[1] *= k;
     e[2] *= k;
     return *this;
 }
 
-inline Vec3 unit_vector(Vec3 v) { return v / v.length(); }
+inline Vec3 unit_vector(const Vec3& v) {
+    float length = v.length();
+
+    if (equal_f(length, 1.0f) || equal_f(length, 0.0f)) {
+        return v;
+    }
+
+    float factor = 1.0f / length;
+    return v * factor;
+}
 
 inline Vec3 random_unit_vector() {
     double a = random_double(0, 2 * pi);

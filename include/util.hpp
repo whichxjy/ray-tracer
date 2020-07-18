@@ -33,4 +33,6 @@ inline double clamp(double x, double min, double max) {
     return x;
 }
 
+inline bool equal_f(double lhs, double rhs) { return fabs(lhs - rhs) < 1e-5f; }
+
 #endif

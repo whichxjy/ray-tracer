@@ -18,8 +18,8 @@ $(BUILD)/%.o: $(SRC)/%.cpp
 
 run: $(TARGET)
 	@./$(TARGET) > result.ppm
-	@# @convert result.ppm result.png
-	@# @rm -f result.ppm
+	@convert result.ppm result.png
+	@rm -f result.ppm
 
 clean:
 	@rm -rf $(BUILD) $(TARGET) result.ppm result.png
