@@ -41,14 +41,26 @@ HittableList get_scene() {
 }
 
 HittableList get_model_scene() {
-    auto model = std::make_shared<Model>("tree.obj");
+    HittableList world;
 
+    auto checker = std::make_shared<CheckerTexture>(
+        std::make_shared<SolidColor>(0.2, 0.3, 0.1),
+        std::make_shared<SolidColor>(0.9, 0.9, 0.9));
+    auto ground_material = std::make_shared<Lambertian>(checker);
+    world.add(
+        std::make_shared<Sphere>(Vec3(0, -1005, 0), 1000, ground_material));
+
+    auto earth_texture = std::make_shared<ImageTexture>("earth.jpg");
+    auto earth_surface = std::make_shared<Lambertian>(earth_texture);
+    world.add(std::make_shared<Sphere>(Vec3(-2, 2.5, 0), 1.0, earth_surface));
+
+    auto model = std::make_shared<Model>("tree.obj");
     auto tree_texture = std::make_shared<ImageTexture>("tree.png");
     auto tree_surface = std::make_shared<Lambertian>(tree_texture);
-
     model->material = tree_surface;
+    world.add(model);
 
-    return HittableList(model);
+    return world;
 }
 
 Vec3 ray_color(const Ray& ray, const Vec3& background_color,
@@ -78,8 +90,8 @@ Vec3 ray_color(const Ray& ray, const Vec3& background_color,
 int main() {
     double aspect_ratio = 16.0 / 9.0;
 
-    Vec3 lookfrom(0, 3, 13);
-    Vec3 lookat(0, 0, -1);
+    Vec3 lookfrom(0, 4, 15);
+    Vec3 lookat(0, 1, -1);
     Vec3 vup(0, 1, 0);
     double dist_to_focus = (lookfrom - lookat).length();
     double aperture = 2.0;
@@ -97,7 +109,7 @@ int main() {
               << "255" << std::endl;
 
     HittableList world = get_model_scene();
-    Vec3 background_color(0.2, 0.2, 0.2);
+    Vec3 background_color(0.5, 0.5, 0.5);
 
     for (int j = image_height - 1; j >= 0; --j) {
         for (int i = 0; i < image_width; ++i) {

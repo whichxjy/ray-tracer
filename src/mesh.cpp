@@ -54,8 +54,8 @@ Model::Model(const std::string& path) {
         int index2 = indices[i + 2];
 
         Vec3 face_normal =
-            (vertices[index1].position - vertices[index0].position) *
-            (vertices[index2].position - vertices[index0].position);
+            cross(vertices[index1].position - vertices[index0].position,
+                  vertices[index2].position - vertices[index0].position);
 
         face_normals.push_back(unit_vector(face_normal));
     }
