@@ -17,7 +17,7 @@ HittableList get_scene() {
 
     auto diffuse_light = std::make_shared<DiffuseLight>(
         std::make_shared<SolidColor>(10, 10, 10));
-    world.add(std::make_shared<Sphere>(Vec3(0, 4, 0), 1, diffuse_light));
+    world.add(std::make_shared<Sphere>(Vec3(0, 5, 0), 1, diffuse_light));
 
     auto checker = std::make_shared<CheckerTexture>(
         std::make_shared<SolidColor>(0.2, 0.3, 0.1),
@@ -108,7 +108,7 @@ int main() {
               << image_width << ' ' << image_height << std::endl
               << "255" << std::endl;
 
-    HittableList world = get_model_scene();
+    HittableList world = get_scene();
     Vec3 background_color(0.5, 0.5, 0.5);
 
     for (int j = image_height - 1; j >= 0; --j) {
