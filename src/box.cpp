@@ -18,3 +18,13 @@ bool Box::hit(const Ray& ray, double t_min, double t_max) const {
     }
     return true;
 }
+
+Box surrounding_box(const Box& lhs, const Box& rhs) {
+    Vec3 min(fmin(lhs.min.x(), rhs.min.x()), fmin(lhs.min.y(), rhs.min.y()),
+             fmin(lhs.min.z(), rhs.min.z()));
+
+    Vec3 max(fmax(lhs.max.x(), rhs.max.x()), fmax(lhs.max.y(), rhs.max.y()),
+             fmax(lhs.max.z(), rhs.max.z()));
+
+    return Box(min, max);
+}

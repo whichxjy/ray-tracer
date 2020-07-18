@@ -14,6 +14,9 @@ public:
     virtual bool hit(const Ray& ray, double t_min, double t_max,
                      HitRecord& record) const;
 
+    virtual bool bounding_box(double t_min, double t_max,
+                              Box& output_box) const;
+
 public:
     Vec3 center;
     double radius;

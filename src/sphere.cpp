@@ -40,6 +40,12 @@ bool Sphere::hit(const Ray& ray, double t_min, double t_max,
     return false;
 }
 
+bool Sphere::bounding_box(double t_min, double t_max, Box& output_box) const {
+    output_box = Box(center - Vec3(radius, radius, radius),
+                     center + Vec3(radius, radius, radius));
+    return true;
+}
+
 void get_sphere_texcoord(const Vec3& position, Vec2& texcoord) {
     double phi = atan2(position.z(), position.x());
     double theta = asin(position.y());

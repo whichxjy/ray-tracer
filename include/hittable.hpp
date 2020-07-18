@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "box.hpp"
 #include "ray.hpp"
 #include "vec/vec2.hpp"
 
@@ -25,6 +26,9 @@ class Hittable {
 public:
     virtual bool hit(const Ray& ray, double t_min, double t_max,
                      HitRecord& record) const = 0;
+
+    virtual bool bounding_box(double t_min, double t_max,
+                              Box& output_box) const = 0;
 };
 
 class HittableList : public Hittable {
@@ -37,6 +41,9 @@ public:
 
     virtual bool hit(const Ray& ray, double t_min, double t_max,
                      HitRecord& record) const;
+
+    virtual bool bounding_box(double t_min, double t_max,
+                              Box& output_box) const;
 
 public:
     std::vector<std::shared_ptr<Hittable>> objects;
