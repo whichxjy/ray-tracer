@@ -117,13 +117,13 @@ int main() {
 
     std::vector<Vec3> pixel_colors;
 
-    for (int j = image_height - 1; j >= 0; --j) {
-        for (int i = 0; i < image_width; ++i) {
+    for (int row = image_height - 1; row >= 0; --row) {
+        for (int col = 0; col < image_width; ++col) {
             Vec3 pixel_color(0, 0, 0);
 
             for (int s = 0; s < samples_per_pixel; ++s) {
-                double u = (i + random_double()) / (image_width - 1);
-                double v = (j + random_double()) / (image_height - 1);
+                double u = (col + random_double()) / (image_width - 1);
+                double v = (row + random_double()) / (image_height - 1);
                 Ray ray = camera.get_ray(u, v);
                 pixel_color +=
                     ray_color(ray, background_color, world, max_depth);
