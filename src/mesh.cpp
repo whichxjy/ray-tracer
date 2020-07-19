@@ -8,9 +8,13 @@
 #include <iostream>
 
 #include "util.hpp"
+#include "vec/matrix4.hpp"
+#include "vec/vec3.hpp"
+#include "vec/vec4.hpp"
 
-Model::Model(const std::string& path) {
+Model::Model(const std::string& path, const Vec3& position) {
     load_model(path);
+    transformation.translate(position - center);
     preprocess();
 }
 
@@ -83,6 +87,7 @@ void Model::load_model(const std::string& path) {
     }
 
     box = Box(min, max);
+    center = (min + max) / 2;
 
     indices.reserve(3 * mesh->mNumVertices);
 
@@ -98,6 +103,33 @@ void Model::load_model(const std::string& path) {
 }
 
 void Model::preprocess() {
+    Matrix4 model_matrix = transformation.to_matrix();
+    Matrix4 inv_model_matrix = transformation.to_inv_matrix();
+
+    Vec3 min(infinity, infinity, infinity);
+    Vec3 max(-infinity, -infinity, -infinity);
+
+    for (int i = 0; i < vertices.size(); i++) {
+        Vec4 position = vertices[i].position;
+        position[3] = 1;
+
+        Vec4 normal = vertices[i].position;
+        normal[3] = 0;
+
+        vertices[i].position = model_matrix * position;
+        vertices[i].normal = inv_model_matrix * position;
+
+        min[0] = fmin(min[0], vertices[i].position.x());
+        min[1] = fmin(min[1], vertices[i].position.y());
+        min[2] = fmin(min[2], vertices[i].position.z());
+
+        max[0] = fmax(max[0], vertices[i].position.x());
+        max[1] = fmax(max[1], vertices[i].position.y());
+        max[2] = fmax(max[2], vertices[i].position.z());
+    }
+
+    box = Box(min, max);
+
     for (int i = 0; i < indices.size(); i += 3) {
         int index0 = indices[i + 0];
         int index1 = indices[i + 1];

@@ -5,12 +5,13 @@
 #include <vector>
 
 #include "hittable.hpp"
+#include "transform.hpp"
 #include "vertex.hpp"
 
 class Model : public Hittable {
 public:
     Model() = default;
-    Model(const std::string& path);
+    Model(const std::string& path, const Vec3& position);
 
     virtual bool hit(const Ray& ray, double t_min, double t_max,
                      HitRecord& record) const;
@@ -22,6 +23,8 @@ public:
     Box box;
 
 private:
+    Vec3 center;
+    Transform transformation;
     std::vector<Vertex> vertices;
     std::vector<int> indices;
     std::vector<Vec3> face_normals;

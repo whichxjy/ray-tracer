@@ -7,6 +7,8 @@
 
 #include "util.hpp"
 
+class Vec4;
+
 class Vec3 {
 public:
     Vec3() {}
@@ -15,6 +17,7 @@ public:
         e[1] = e1;
         e[2] = e2;
     }
+    Vec3(const Vec4& other);
 
     inline double x() const { return e[0]; }
     inline double y() const { return e[1]; }
