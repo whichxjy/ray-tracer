@@ -118,7 +118,7 @@ int main() {
     uint8_t* pixels = new uint8_t[image_width * image_height * channel];
 
     for (int row = 0; row < image_height - 1; row++) {
-        for (int col = image_width - 1; col >= 0; --col) {
+        for (int col = 0; col < image_width - 1; col++) {
             Vec3 pixel_color(0, 0, 0);
 
             for (int s = 0; s < samples_per_pixel; ++s) {
