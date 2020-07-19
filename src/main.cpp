@@ -6,13 +6,13 @@
 #include "camera.hpp"
 #include "color.hpp"
 #include "hittable.hpp"
+#include "image/writer.hpp"
 #include "material.hpp"
 #include "mesh.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
 #include "texture.hpp"
 #include "util.hpp"
-#include "writer.hpp"
 
 HittableList get_scene() {
     HittableList world;

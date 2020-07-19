@@ -1,7 +1,7 @@
 #ifndef _TEXTURE_HPP_
 #define _TEXTURE_HPP_
 
-#include "image.hpp"
+#include "image/loader.hpp"
 #include "vec/vec3.hpp"
 
 class Texture {
