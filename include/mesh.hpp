@@ -15,7 +15,11 @@ public:
     virtual bool hit(const Ray& ray, double t_min, double t_max,
                      HitRecord& record) const;
 
+    virtual bool bounding_box(double t_min, double t_max,
+                              Box& output_box) const;
+
     std::shared_ptr<Material> material;
+    Box box;
 
 private:
     std::vector<Vertex> vertices;

@@ -37,6 +37,8 @@ HittableList get_scene() {
         std::make_shared<SolidColor>(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<Sphere>(Vec3(2.5, 1, 0), 1.0, material3));
 
+    world.build();
+
     return world;
 }
 
@@ -52,13 +54,15 @@ HittableList get_model_scene() {
 
     auto earth_texture = std::make_shared<ImageTexture>("earth.jpg");
     auto earth_surface = std::make_shared<Lambertian>(earth_texture);
-    world.add(std::make_shared<Sphere>(Vec3(-2, 2.5, 0), 1.0, earth_surface));
+    world.add(std::make_shared<Sphere>(Vec3(-2, 2, 0), 1.0, earth_surface));
 
     auto model = std::make_shared<Model>("tree.obj");
     auto tree_texture = std::make_shared<ImageTexture>("tree.png");
     auto tree_surface = std::make_shared<Lambertian>(tree_texture);
     model->material = tree_surface;
     world.add(model);
+
+    world.build();
 
     return world;
 }
@@ -90,7 +94,7 @@ Vec3 ray_color(const Ray& ray, const Vec3& background_color,
 int main() {
     double aspect_ratio = 16.0 / 9.0;
 
-    Vec3 lookfrom(0, 4, 15);
+    Vec3 lookfrom(0, 2, 12);
     Vec3 lookat(0, 1, -1);
     Vec3 vup(0, 1, 0);
     double dist_to_focus = (lookfrom - lookat).length();
@@ -99,7 +103,7 @@ int main() {
     Camera camera(lookfrom, lookat, vup, 20, aspect_ratio, aperture,
                   dist_to_focus);
 
-    int image_width = 250;
+    int image_width = 400;
     int image_height = static_cast<int>(image_width / aspect_ratio);
     int samples_per_pixel = 100;
     int max_depth = 50;
@@ -108,7 +112,7 @@ int main() {
               << image_width << ' ' << image_height << std::endl
               << "255" << std::endl;
 
-    HittableList world = get_scene();
+    HittableList world = get_model_scene();
     Vec3 background_color(0.5, 0.5, 0.5);
 
     for (int j = image_height - 1; j >= 0; --j) {

@@ -26,15 +26,28 @@ Model::Model(const std::string& path) {
 
     vertices.reserve(mesh->mNumVertices);
 
+    Vec3 min(infinity, infinity, infinity);
+    Vec3 max(-infinity, -infinity, -infinity);
+
     for (int i = 0; i < mesh->mNumVertices; i++) {
         const aiVector3D* position = &(mesh->mVertices[i]);
         const aiVector3D* normal = &(mesh->mNormals[i]);
         const aiVector3D* texcoord = &(mesh->mTextureCoords[0][i]);
 
+        min[0] = fmin(min[0], position->x);
+        min[1] = fmin(min[1], position->y);
+        min[2] = fmin(min[2], position->z);
+
+        max[0] = fmax(max[0], position->x);
+        max[1] = fmax(max[1], position->y);
+        max[2] = fmax(max[2], position->z);
+
         vertices.emplace_back(Vec3(position->x, position->y, position->z),
                               Vec3(normal->x, normal->y, normal->z),
                               Vec2(texcoord->x, texcoord->y));
     }
+
+    box = Box(min, max);
 
     indices.reserve(3 * mesh->mNumVertices);
 
@@ -84,6 +97,11 @@ bool Model::hit(const Ray& ray, double t_min, double t_max,
     }
 
     return hit_anything;
+}
+
+bool Model::bounding_box(double t_min, double t_max, Box& output_box) const {
+    output_box = box;
+    return true;
 }
 
 bool Model::hitTriangle(const Ray& ray, double t_min, double t_max,
