@@ -11,7 +11,8 @@
 class Model : public Hittable {
 public:
     Model() = default;
-    Model(const std::string& path, const Vec3& position);
+    Model(const std::string& path, const Vec3& position,
+          std::shared_ptr<Material> material);
 
     virtual bool hit(const Ray& ray, double t_min, double t_max,
                      HitRecord& record) const;

@@ -12,7 +12,9 @@
 #include "vec/vec3.hpp"
 #include "vec/vec4.hpp"
 
-Model::Model(const std::string& path, const Vec3& position) {
+Model::Model(const std::string& path, const Vec3& position,
+             std::shared_ptr<Material> material) {
+    this->material = material;
     load_model(path);
     transformation.translate(position - center);
     preprocess();

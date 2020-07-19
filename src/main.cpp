@@ -17,30 +17,44 @@
 #include "texture.hpp"
 #include "util.hpp"
 
-HittableList get_scene() {
+HittableList get_sphere_scene() {
     HittableList world;
 
-    auto diffuse_light = std::make_shared<DiffuseLight>(
-        std::make_shared<SolidColor>(10, 10, 10));
-    world.add(std::make_shared<Sphere>(Vec3(0, 5, 0), 1, diffuse_light));
+    auto light = ([]() {
+        auto texture = std::make_shared<SolidColor>(10, 10, 10);
+        auto material = std::make_shared<DiffuseLight>(texture);
+        return std::make_shared<Sphere>(Vec3(0, 5, 0), 1, material);
+    })();
+    world.add(light);
 
-    auto checker = std::make_shared<CheckerTexture>(
-        std::make_shared<SolidColor>(0.2, 0.3, 0.1),
-        std::make_shared<SolidColor>(0.9, 0.9, 0.9));
-    auto ground_material = std::make_shared<Lambertian>(checker);
-    world.add(
-        std::make_shared<Sphere>(Vec3(0, -1000, 0), 1000, ground_material));
+    auto ground = ([]() {
+        auto texture = std::make_shared<CheckerTexture>(
+            std::make_shared<SolidColor>(0.2, 0.3, 0.1),
+            std::make_shared<SolidColor>(0.9, 0.9, 0.9));
+        auto material = std::make_shared<Lambertian>(texture);
+        return std::make_shared<Sphere>(Vec3(0, -1000, 0), 1000, material);
+    })();
+    world.add(ground);
 
-    auto material1 = std::make_shared<Dielectric>(1.5);
-    world.add(std::make_shared<Sphere>(Vec3(-2.5, 1, 0), 1.0, material1));
+    auto sphere1 = ([]() {
+        auto material = std::make_shared<Dielectric>(1.5);
+        return std::make_shared<Sphere>(Vec3(-2.5, 1, 0), 1.0, material);
+    })();
+    world.add(sphere1);
 
-    auto earth_texture = std::make_shared<ImageTexture>("earth.jpg");
-    auto earth_surface = std::make_shared<Lambertian>(earth_texture);
-    world.add(std::make_shared<Sphere>(Vec3(0, 1, 0), 1.0, earth_surface));
+    auto sphere2 = ([]() {
+        auto texture = std::make_shared<ImageTexture>("earth.jpg");
+        auto material = std::make_shared<Lambertian>(texture);
+        return std::make_shared<Sphere>(Vec3(0, 1, 0), 1.0, material);
+    })();
+    world.add(sphere2);
 
-    auto material3 = std::make_shared<Metal>(
-        std::make_shared<SolidColor>(0.7, 0.6, 0.5), 0.0);
-    world.add(std::make_shared<Sphere>(Vec3(2.5, 1, 0), 1.0, material3));
+    auto sphere3 = ([]() {
+        auto texture = std::make_shared<SolidColor>(0.7, 0.6, 0.5);
+        auto material = std::make_shared<Metal>(texture, 0.0);
+        return std::make_shared<Sphere>(Vec3(2.5, 1, 0), 1.0, material);
+    })();
+    world.add(sphere3);
 
     world.build();
 
@@ -50,22 +64,28 @@ HittableList get_scene() {
 HittableList get_model_scene() {
     HittableList world;
 
-    auto checker = std::make_shared<CheckerTexture>(
-        std::make_shared<SolidColor>(0.2, 0.3, 0.1),
-        std::make_shared<SolidColor>(0.9, 0.9, 0.9));
-    auto ground_material = std::make_shared<Lambertian>(checker);
-    world.add(
-        std::make_shared<Sphere>(Vec3(0, -1005, 0), 1000, ground_material));
+    auto ground = ([]() {
+        auto texture = std::make_shared<CheckerTexture>(
+            std::make_shared<SolidColor>(0.2, 0.3, 0.1),
+            std::make_shared<SolidColor>(0.9, 0.9, 0.9));
+        auto material = std::make_shared<Lambertian>(texture);
+        return std::make_shared<Sphere>(Vec3(0, -1000, 0), 1000, material);
+    })();
+    world.add(ground);
 
-    auto earth_texture = std::make_shared<ImageTexture>("earth.jpg");
-    auto earth_surface = std::make_shared<Lambertian>(earth_texture);
-    world.add(std::make_shared<Sphere>(Vec3(-2, 2, 0), 1.0, earth_surface));
+    auto sphere = ([]() {
+        auto texture = std::make_shared<ImageTexture>("earth.jpg");
+        auto material = std::make_shared<Lambertian>(texture);
+        return std::make_shared<Sphere>(Vec3(-2, 1, 0), 1.0, material);
+    })();
+    world.add(sphere);
 
-    auto model = std::make_shared<Model>("tree.obj");
-    auto tree_texture = std::make_shared<ImageTexture>("tree.png");
-    auto tree_surface = std::make_shared<Lambertian>(tree_texture);
-    model->material = tree_surface;
-    world.add(model);
+    auto tree = ([]() {
+        auto texture = std::make_shared<ImageTexture>("tree.png");
+        auto material = std::make_shared<Lambertian>(texture);
+        return std::make_shared<Model>("tree.obj", Vec3(0, 1, 0), material);
+    })();
+    world.add(tree);
 
     world.build();
 
@@ -99,13 +119,14 @@ Vec3 ray_color(const Ray& ray, const Vec3& background_color,
 int main() {
     double aspect_ratio = 16.0 / 9.0;
 
-    Vec3 lookfrom(0, 2, 12);
-    Vec3 lookat(0, 1, -1);
+    Vec3 lookfrom(0, 0.5, 12);
+    Vec3 lookat(0, 0.5, -1);
     Vec3 vup(0, 1, 0);
+    double vfov = 20;
     double dist_to_focus = (lookfrom - lookat).length();
     double aperture = 2.0;
 
-    Camera camera(lookfrom, lookat, vup, 20, aspect_ratio, aperture,
+    Camera camera(lookfrom, lookat, vup, vfov, aspect_ratio, aperture,
                   dist_to_focus);
 
     int image_width = 200;
@@ -145,6 +166,8 @@ int main() {
                 pixels[index + 1] = color.y();
                 pixels[index + 2] = color.z();
                 pixels[index + 3] = 255;
+
+                std::cout << row << " " << col << std::endl;
             });
         }
     }
