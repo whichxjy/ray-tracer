@@ -2,7 +2,7 @@
 
 #include "util.hpp"
 
-void write_color(std::ostream& os, Vec3 pixel_color, int samples_per_pixel) {
+Vec3 get_color(Vec3 pixel_color, int samples_per_pixel) {
     double r = pixel_color.x();
     double g = pixel_color.y();
     double b = pixel_color.z();
@@ -12,7 +12,7 @@ void write_color(std::ostream& os, Vec3 pixel_color, int samples_per_pixel) {
     g = sqrt(scale * g);
     b = sqrt(scale * b);
 
-    os << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << ' '
-       << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << ' '
-       << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << std::endl;
+    return Vec3(static_cast<uint8_t>(256 * clamp(r, 0.0, 0.999)),
+                static_cast<uint8_t>(256 * clamp(g, 0.0, 0.999)),
+                static_cast<uint8_t>(256 * clamp(b, 0.0, 0.999)));
 }

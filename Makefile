@@ -17,9 +17,7 @@ $(BUILD)/%.o: $(SRC)/%.cpp
 	@$(CC) -o $@ -c $^ $(INCLUDE)
 
 run: $(TARGET)
-	@./$(TARGET) > result.ppm
-	@convert result.ppm result.png
-	@rm -f result.ppm
+	@./$(TARGET)
 
 clean:
-	@rm -rf $(BUILD) $(TARGET) result.ppm result.png
+	@rm -rf $(BUILD) $(TARGET) result.png

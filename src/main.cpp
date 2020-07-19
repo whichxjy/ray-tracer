@@ -2,6 +2,7 @@
 #include <memory>
 
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "camera.hpp"
 #include "color.hpp"
 #include "hittable.hpp"
@@ -11,6 +12,7 @@
 #include "sphere.hpp"
 #include "texture.hpp"
 #include "util.hpp"
+#include "writer.hpp"
 
 HittableList get_scene() {
     HittableList world;
@@ -108,17 +110,15 @@ int main() {
     int samples_per_pixel = 100;
     int max_depth = 50;
 
-    std::cout << "P3" << std::endl
-              << image_width << ' ' << image_height << std::endl
-              << "255" << std::endl;
-
     HittableList world = get_model_scene();
     Vec3 background_color(0.7, 0.7, 0.7);
 
-    std::vector<Vec3> pixel_colors;
+    const int channel = 4;
 
-    for (int row = image_height - 1; row >= 0; --row) {
-        for (int col = 0; col < image_width; ++col) {
+    uint8_t* pixels = new uint8_t[image_width * image_height * channel];
+
+    for (int row = 0; row < image_height - 1; row++) {
+        for (int col = image_width - 1; col >= 0; --col) {
             Vec3 pixel_color(0, 0, 0);
 
             for (int s = 0; s < samples_per_pixel; ++s) {
@@ -129,11 +129,20 @@ int main() {
                     ray_color(ray, background_color, world, max_depth);
             }
 
-            pixel_colors.emplace_back(pixel_color);
+            Vec3 color = get_color(pixel_color, samples_per_pixel);
+
+            size_t index =
+                ((image_height - row - 1) * image_width + col) * channel;
+
+            pixels[index + 0] = color.x();
+            pixels[index + 1] = color.y();
+            pixels[index + 2] = color.z();
+            pixels[index + 3] = 255;
         }
     }
 
-    for (const Vec3& pixel_color : pixel_colors) {
-        write_color(std::cout, pixel_color, samples_per_pixel);
-    }
+    stbi_write_png("result.png", image_width, image_height, channel, pixels,
+                   image_width * channel);
+
+    delete[] pixels;
 }
