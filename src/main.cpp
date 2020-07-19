@@ -56,8 +56,6 @@ HittableList get_sphere_scene() {
     })();
     world.add(sphere3);
 
-    world.build();
-
     return world;
 }
 
@@ -86,8 +84,6 @@ HittableList get_model_scene() {
         return std::make_shared<Model>("tree.obj", Vec3(0, 1, 0), material);
     })();
     world.add(tree);
-
-    world.build();
 
     return world;
 }
@@ -135,6 +131,8 @@ int main() {
     int max_depth = 50;
 
     HittableList world = get_model_scene();
+    world.build();
+
     Vec3 background_color(0.7, 0.7, 0.7);
 
     std::vector<std::thread> threads;
@@ -166,8 +164,6 @@ int main() {
                 pixels[index + 1] = color.y();
                 pixels[index + 2] = color.z();
                 pixels[index + 3] = 255;
-
-                std::cout << row << " " << col << std::endl;
             });
         }
     }
