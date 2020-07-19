@@ -103,7 +103,7 @@ int main() {
     Camera camera(lookfrom, lookat, vup, 20, aspect_ratio, aperture,
                   dist_to_focus);
 
-    int image_width = 400;
+    int image_width = 200;
     int image_height = static_cast<int>(image_width / aspect_ratio);
     int samples_per_pixel = 100;
     int max_depth = 50;
@@ -113,7 +113,9 @@ int main() {
               << "255" << std::endl;
 
     HittableList world = get_model_scene();
-    Vec3 background_color(0.5, 0.5, 0.5);
+    Vec3 background_color(0.7, 0.7, 0.7);
+
+    std::vector<Vec3> pixel_colors;
 
     for (int j = image_height - 1; j >= 0; --j) {
         for (int i = 0; i < image_width; ++i) {
@@ -127,7 +129,11 @@ int main() {
                     ray_color(ray, background_color, world, max_depth);
             }
 
-            write_color(std::cout, pixel_color, samples_per_pixel);
+            pixel_colors.emplace_back(pixel_color);
         }
+    }
+
+    for (const Vec3& pixel_color : pixel_colors) {
+        write_color(std::cout, pixel_color, samples_per_pixel);
     }
 }
