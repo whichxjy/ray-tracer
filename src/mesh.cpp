@@ -10,6 +10,41 @@
 #include "util.hpp"
 
 Model::Model(const std::string& path) {
+    load_model(path);
+    preprocess();
+}
+
+bool Model::hit(const Ray& ray, double t_min, double t_max,
+                HitRecord& record) const {
+    HitRecord temp_record;
+    bool hit_anything = false;
+    double closest_so_far = t_max;
+
+    assert(indices.size() % 3 == 0);
+
+    for (int i = 0; i < indices.size(); i += 3) {
+        int index1 = indices[i + 0];
+        int index2 = indices[i + 1];
+        int index3 = indices[i + 2];
+
+        if (hit_triangle(ray, t_min, closest_so_far, temp_record,
+                         vertices[index1], vertices[index2], vertices[index3],
+                         face_normals[i / 3])) {
+            hit_anything = true;
+            closest_so_far = temp_record.t;
+            record = temp_record;
+        }
+    }
+
+    return hit_anything;
+}
+
+bool Model::bounding_box(double t_min, double t_max, Box& output_box) const {
+    output_box = box;
+    return true;
+}
+
+void Model::load_model(const std::string& path) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(
         path, aiProcess_CalcTangentSpace | aiProcess_Triangulate |
@@ -60,7 +95,9 @@ Model::Model(const std::string& path) {
         indices.push_back(face.mIndices[1]);
         indices.push_back(face.mIndices[2]);
     }
+}
 
+void Model::preprocess() {
     for (int i = 0; i < indices.size(); i += 3) {
         int index0 = indices[i + 0];
         int index1 = indices[i + 1];
@@ -74,39 +111,9 @@ Model::Model(const std::string& path) {
     }
 }
 
-bool Model::hit(const Ray& ray, double t_min, double t_max,
-                HitRecord& record) const {
-    HitRecord temp_record;
-    bool hit_anything = false;
-    double closest_so_far = t_max;
-
-    assert(indices.size() % 3 == 0);
-
-    for (int i = 0; i < indices.size(); i += 3) {
-        int index1 = indices[i + 0];
-        int index2 = indices[i + 1];
-        int index3 = indices[i + 2];
-
-        if (hitTriangle(ray, t_min, closest_so_far, temp_record,
-                        vertices[index1], vertices[index2], vertices[index3],
-                        face_normals[i / 3])) {
-            hit_anything = true;
-            closest_so_far = temp_record.t;
-            record = temp_record;
-        }
-    }
-
-    return hit_anything;
-}
-
-bool Model::bounding_box(double t_min, double t_max, Box& output_box) const {
-    output_box = box;
-    return true;
-}
-
-bool Model::hitTriangle(const Ray& ray, double t_min, double t_max,
-                        HitRecord& record, const Vertex& p0, const Vertex& p1,
-                        const Vertex& p2, const Vec3& normal) const {
+bool Model::hit_triangle(const Ray& ray, double t_min, double t_max,
+                         HitRecord& record, const Vertex& p0, const Vertex& p1,
+                         const Vertex& p2, const Vec3& normal) const {
     double n_dot_dir = dot(normal, ray.direction);
 
     if (equal_f(n_dot_dir, 0)) {
