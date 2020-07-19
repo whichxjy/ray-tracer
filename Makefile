@@ -1,4 +1,4 @@
-CC = g++ -std=c++17
+CC = g++ -std=c++17 -pthread
 INC = include
 SRC = src
 BUILD = build

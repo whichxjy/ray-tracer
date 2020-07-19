@@ -1,8 +1,11 @@
 #include <iostream>
 #include <memory>
+#include <mutex>
+#include <thread>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "camera.hpp"
 #include "color.hpp"
 #include "hittable.hpp"
@@ -113,32 +116,41 @@ int main() {
     HittableList world = get_model_scene();
     Vec3 background_color(0.7, 0.7, 0.7);
 
+    std::vector<std::thread> threads;
+
     const int channel = 4;
 
     uint8_t* pixels = new uint8_t[image_width * image_height * channel];
 
     for (int row = 0; row < image_height - 1; row++) {
         for (int col = 0; col < image_width - 1; col++) {
-            Vec3 pixel_color(0, 0, 0);
+            threads.emplace_back([=, &camera, &background_color, &world,
+                                  &pixels]() {
+                Vec3 pixel_color(0, 0, 0);
 
-            for (int s = 0; s < samples_per_pixel; ++s) {
-                double u = (col + random_double()) / (image_width - 1);
-                double v = (row + random_double()) / (image_height - 1);
-                Ray ray = camera.get_ray(u, v);
-                pixel_color +=
-                    ray_color(ray, background_color, world, max_depth);
-            }
+                for (int s = 0; s < samples_per_pixel; ++s) {
+                    double u = (col + random_double()) / (image_width - 1);
+                    double v = (row + random_double()) / (image_height - 1);
+                    Ray ray = camera.get_ray(u, v);
+                    pixel_color +=
+                        ray_color(ray, background_color, world, max_depth);
+                }
 
-            Vec3 color = get_color(pixel_color, samples_per_pixel);
+                Vec3 color = get_color(pixel_color, samples_per_pixel);
 
-            size_t index =
-                ((image_height - row - 1) * image_width + col) * channel;
+                size_t index =
+                    ((image_height - row - 1) * image_width + col) * channel;
 
-            pixels[index + 0] = color.x();
-            pixels[index + 1] = color.y();
-            pixels[index + 2] = color.z();
-            pixels[index + 3] = 255;
+                pixels[index + 0] = color.x();
+                pixels[index + 1] = color.y();
+                pixels[index + 2] = color.z();
+                pixels[index + 3] = 255;
+            });
         }
+    }
+
+    for (std::thread& thread : threads) {
+        thread.join();
     }
 
     stbi_write_png("result.png", image_width, image_height, channel, pixels,
