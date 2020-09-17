@@ -21,7 +21,7 @@ HittableList get_sphere_scene() {
     HittableList world;
 
     auto light = ([]() {
-        auto texture = std::make_shared<SolidColor>(10, 10, 10);
+        auto texture = std::make_shared<SolidColor>(3, 3, 3);
         auto material = std::make_shared<DiffuseLight>(texture);
         return std::make_shared<Sphere>(Vec3(0, 5, 0), 1, material);
     })();
@@ -81,45 +81,23 @@ HittableList get_model_scene() {
     auto sphere1 = ([]() {
         auto texture = std::make_shared<SolidColor>(0.8, 0.6, 0.2);
         auto material = std::make_shared<Metal>(texture, 0.0);
-        return std::make_shared<Sphere>(Vec3(-3, 1, 0), 1, material);
+        return std::make_shared<Sphere>(Vec3(-2, 1, 0), 1, material);
     })();
     world.add(sphere1);
 
-    auto tree1 = ([]() {
+    auto tree = ([]() {
         auto texture = std::make_shared<ImageTexture>("assets/tree.png");
         auto material = std::make_shared<Lambertian>(texture);
-        return std::make_shared<Model>("assets/tree.obj", Vec3(-0.7, 1, 0),
+        return std::make_shared<Model>("assets/tree.obj", Vec3(0, 1, 0),
                                        material);
     })();
-    world.add(tree1);
-
-    auto tree2 = ([]() {
-        auto texture = std::make_shared<ImageTexture>("assets/tree.png");
-        auto material = std::make_shared<Lambertian>(texture);
-        return std::make_shared<Model>("assets/tree.obj", Vec3(0.7, 1, 0),
-                                       material);
-    })();
-    world.add(tree2);
+    world.add(tree);
 
     auto sphere2 = ([]() {
         auto material = std::make_shared<Dielectric>(1.5);
-        return std::make_shared<Sphere>(Vec3(3, 1, 0), 1, material);
+        return std::make_shared<Sphere>(Vec3(2, 1, 0), 1, material);
     })();
     world.add(sphere2);
-
-    auto sphere3 = ([]() {
-        auto texture = std::make_shared<ImageTexture>("assets/earth.jpg");
-        auto material = std::make_shared<Lambertian>(texture);
-        return std::make_shared<Sphere>(Vec3(-1.5, 0.5, 5), 0.5, material);
-    })();
-    world.add(sphere3);
-
-    auto sphere4 = ([]() {
-        auto texture = std::make_shared<SolidColor>(0.4, 0.7, 0.9);
-        auto material = std::make_shared<Lambertian>(texture);
-        return std::make_shared<Sphere>(Vec3(1.5, 0.5, 5), 0.5, material);
-    })();
-    world.add(sphere4);
 
     return world;
 }
@@ -161,17 +139,15 @@ int main() {
     Camera camera(lookfrom, lookat, vup, vfov, aspect_ratio, aperture,
                   dist_to_focus);
 
-    int image_width = 600;
+    int image_width = 300;
     int image_height = static_cast<int>(image_width / aspect_ratio);
-    int samples_per_pixel = 10;
-    int max_depth = 50;
+    int samples_per_pixel = 100;
+    int max_depth = 100;
 
-    HittableList world = get_model_scene();
+    HittableList world = get_sphere_scene();
     world.build();
 
     Vec3 background_color(0.5, 0.5, 0.5);
-
-    std::vector<std::thread> threads;
 
     const int channel = 4;
 
@@ -179,33 +155,26 @@ int main() {
 
     for (int row = 0; row < image_height - 1; row++) {
         for (int col = 0; col < image_width - 1; col++) {
-            threads.emplace_back([=, &camera, &background_color, &world,
-                                  &pixels]() {
-                Vec3 pixel_color(0, 0, 0);
+            Vec3 pixel_color(0, 0, 0);
 
-                for (int s = 0; s < samples_per_pixel; ++s) {
-                    double u = (col + random_double()) / (image_width - 1);
-                    double v = (row + random_double()) / (image_height - 1);
-                    Ray ray = camera.get_ray(u, v);
-                    pixel_color +=
-                        ray_color(ray, background_color, world, max_depth);
-                }
+            for (int s = 0; s < samples_per_pixel; ++s) {
+                double u = (col + random_double()) / (image_width - 1);
+                double v = (row + random_double()) / (image_height - 1);
+                Ray ray = camera.get_ray(u, v);
+                pixel_color +=
+                    ray_color(ray, background_color, world, max_depth);
+            }
 
-                Vec3 color = get_color(pixel_color, samples_per_pixel);
+            Vec3 color = get_color(pixel_color, samples_per_pixel);
 
-                size_t index =
-                    ((image_height - row - 1) * image_width + col) * channel;
+            size_t index =
+                ((image_height - row - 1) * image_width + col) * channel;
 
-                pixels[index + 0] = color.x();
-                pixels[index + 1] = color.y();
-                pixels[index + 2] = color.z();
-                pixels[index + 3] = 255;
-            });
+            pixels[index + 0] = color.x();
+            pixels[index + 1] = color.y();
+            pixels[index + 2] = color.z();
+            pixels[index + 3] = 255;
         }
-    }
-
-    for (std::thread& thread : threads) {
-        thread.join();
     }
 
     stbi_write_png("result.png", image_width, image_height, channel, pixels,
